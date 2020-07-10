@@ -1,6 +1,6 @@
 # Plant-water-assistant-with-Nucleo-64-and-Forth
 
-<img src="/setup.jpg" width="300">
+<img src="/setup.jpg" width="1000">
 
 Documentation of ready-to-use application created for the Embedded Systems class held by Professor Daniele Peri in the A.Y. 2019/2020.
 
