@@ -23,6 +23,7 @@ The resources used are:
   - The slides provided by the Professor regarding the Nucleo-64 STM32F446 and the 16x02 LCD display
 
 <h2>Software</h2>
+
 The software part of the project was developed on a MacBook Pro 13 with macOS Mojave, Visual Studio Code was used as a text editor for the programming part and the system terminal to install the operating system and compile the code on the card.
 
 The software used are:
@@ -30,6 +31,7 @@ The software used are:
   - Stlink (STMicroelectronics)
  
 <h2>Code</h2>
+
 Have been used various source codes provided by Professor to write the application:
   - nucle64-STM32F446RE-HAL.f for the first HAL (Hardware Abstraction Layer)
   - arduino.f to use the PIN references of the Arduino board
