@@ -1,0 +1,101 @@
+( Embedded Systems - Sistemi Embedded - 17873)
+( Some code for LCD 1602 )
+( Daniele Peri, Università degli Studi di Palermo, 17-18 )
+
+\ Must be INCLUDEd after arduino.f
+
+: LCDE   D11 ;
+: LCDRS  D12 ; 
+: LCD7   D2 ;
+: LCD6   D3 ;
+: LCD5   D4 ;
+: LCD4   D5 ;
+
+: LCD_SETUP
+   1 LCD4 MODE!   1 LCD5 MODE!  1 LCD6 MODE!
+   1 LCD7 MODE!  1 LCDRS MODE!  1 LCDE MODE!
+;
+
+: BTST AND 0<> ;
+: LCDREG4H!
+   DUP $80 BTST LCD7 OUT! DUP $40 BTST LCD6 OUT! 
+   DUP $20 BTST LCD5 OUT!     $10 BTST LCD4 OUT! ;
+: LCDREG4H@
+   0 LCD7 OUT@ $80 AND OR  LCD6 OUT@ $40 AND OR
+     LCD5 OUT@ $20 AND OR  LCD4 OUT@ $10 AND OR ;
+: LCDRSH   -1 LCDRS OUT! ;
+: LCDRSL    0 LCDRS OUT! ;
+: LCDEH    -1 LCDE OUT! ;
+: LCDEL     0 LCDE OUT! ;
+
+: LCDWR4   LCDEL DUP $100 AND 0<> LCDRS OUT!  
+   ( send upper 4 bits: ) DUP LCDEH  LCDREG4H!  LCDEL
+   ( send lower 4 bits: ) LCDEH 4 LSHIFT  LCDREG4H!  LCDEL ;
+
+\ Examples:
+\
+\ $1 LCDWR4
+\ Clear display
+\
+\ $C0 LCDWR4
+\ Move cursor to the beginning of the second line
+
+: LCDEMIT   $100 OR LCDWR4 ;
+: LCDTYPE   OVER + SWAP ?DO I C@ LCDEMIT LOOP ;
+: LCDINIT   $20 LCDWR4 1s DELAY  $28 LCDWR4 1s DELAY $F LCDWR4 1s DELAY ;
+: LCDMESSAGE_FROM_KEYBORAD   HERE 100 + DUP 16 ACCEPT LCDTYPE ; \ Here = address at the top of dictionary
+: CLEAN_LCD  $1 lcdwr4 1s DELAY ;     \ Delay per dare il tempo di pulire il display
+: NEWLINE   $C0 lcdwr4 ;
+
+\ CODE FOR CUSTOM EMOTICON
+
+: LCDINCRAM  $6 LCDWR4 ;
+: LCDDECRAM  $4 LCDWR4 ;
+
+: LCDCG-SET ( cgn -- )  8 * 7 + $3F AND $40 OR LCDWR4  ; 
+: LCDCG8 LCDCG-SET LCDDECRAM 8 0 DO $1F AND $100 OR LCDWR4 LOOP LCDINCRAM ; 
+
+: LCD_INIT
+   LCD_SETUP
+   LCDINIT 
+   CLEAN_LCD
+
+   \ EMPTY WATER FALL
+   %00100
+   %01010
+   %10001
+   %10001
+   %10001
+   %10001
+   %01110
+   %00000
+   DECIMAL 0 LCDCG8
+
+   \ WATER FALL
+   %00100
+   %01110
+   %11111
+   %11111
+   %11111
+   %11111
+   %01110
+   %00000
+   DECIMAL 1 LCDCG8
+
+   \ PLANT
+   %01110
+   %11111
+   %01110
+   %00100
+   %00100
+   %11111
+   %01110
+   %01110
+   DECIMAL 2 LCDCG8
+
+   $80 LCDWR4
+;
+
+: DRY 1 LCDEMIT 0 LCDEMIT 0 LCDEMIT 0 LCDEMIT 0 LCDEMIT ;
+: WET 1 LCDEMIT 1 LCDEMIT 1 LCDEMIT 1 LCDEMIT 1 LCDEMIT ;
+: PLANT 2 LCDEMIT ; 
